@@ -1,0 +1,224 @@
+---
+title: "Untitled"
+author: '"'
+date: "7/18/2021"
+output: html_document
+---
+
+importing libraries
+
+
+```{r}
+require(tidyverse)
+require(ggplot2)
+require(ggthemes)
+require(hrbrthemes)
+require(magrittr)
+```
+
+importing data in to r
+
+
+```{r}
+library(readr)
+my_data_new <- read_csv("clean_data.csv")
+View(my_data_new)
+```
+
+
+TREND IN DIFFERENT COLUMNS
+
+
+```{r}
+my_data_new %>% ggplot(aes(age))+
+  geom_bar(fill = 'steelblue')+
+  labs(x='AGE', Y='Value Count', title = 'Trend in Age')+
+  theme(axis.title = element_text(size = 12),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14),
+        axis.text.x = element_text(face = 'bold', size = 12, angle = 90),
+        axis.text.y = element_text(face = 'bold', size = 12))+
+  scale_fill_brewer(palette = 'set1')
+
+```
+
+
+The most affected age bracket lies between 23-35
+
+```{r}
+#
+my_data_new %>% ggplot(aes(origin))+
+  geom_bar(fill = 'yellow')+
+  labs(x='AGE', Y='Value Count', title = 'Trend in origin')+
+  theme(axis.title = element_text(size = 12),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14),
+        axis.text.x = element_text(face = 'bold', size = 12, angle = -45),
+        axis.text.y = element_text(face = 'bold', size = 12))+
+  scale_fill_brewer(palette = 'set1')
+
+```
+
+The most affected origin is white ,followed by black, then the latinos
+
+
+```{r}
+#
+my_data_new %>% ggplot(aes(state))+
+  geom_bar(fill = 'steelblue')+
+  labs(x='AGE', Y='Value Count', title = 'Trend in State')+
+  theme(axis.title = element_text(size = 12),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14),
+        axis.text.x = element_text(face = 'bold', size = 12, angle = -45),
+        axis.text.y = element_text(face = 'bold', size = 12))+
+  scale_fill_brewer(palette = 'set1')
+
+```
+
+
+the most affected states are california,texas and florida
+
+```{r}
+#
+my_data_new %>% ggplot(aes(grouping))+
+  geom_bar(fill = 'red')+
+  labs(x='AGE', Y='Value Count', title = 'Trend in Grouping')+
+  theme(axis.title = element_text(size = 12),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14),
+        axis.text.x = element_text(face = 'bold', size = 12, angle = -45),
+        axis.text.y = element_text(face = 'bold', size = 12))+
+  scale_fill_brewer(palette = 'set1')
+```
+
+
+the most used weapon is guns
+
+
+
+
+FACET WRAPPING ORIGIN AND GROUPING
+
+
+```{r}
+#
+my_data_new %>% ggplot(aes(origin))+
+  geom_bar(fill = 'yellow')+
+  facet_wrap(~grouping)+
+  labs(x='count', Y='', title = 'origin and grouping')+
+  theme(axis.title = element_text(size = 12),
+        axis.title.x = element_text(face = 'bold', size = 14),
+        axis.title.y = element_text(face = 'bold', size = 14),
+        axis.text.x = element_text(face = 'bold', size = 12, angle = -45),
+        axis.text.y = element_text(face = 'bold', size = 12))+
+  scale_fill_brewer(palette = 'set1')
+```
+
+
+
+PLOTTING SOME USEFULL VISUALIZATIONS
+
+
+
+```{r}
+my_data_new %>% ggplot(aes(gender)) + geom_bar()+theme_bw() +labs(title = "Death rates by police according to gender")
+my_data_new %>% ggplot(aes(origin)) + geom_bar()+theme_bw() +labs(title = "Death rates by police according to origin")
+my_data_new %>% ggplot(aes(grouping)) + geom_bar()+theme_bw() +labs(title = "Death rates by police according to grouping")
+my_data_new %>% ggplot(aes(age)) + geom_histogram(binwidth = 5)+theme_bw() +labs(title = "Death rates by police according to age")
+my_data_new %>% ggplot(aes(state)) + geom_bar()+theme_bw() +labs(title = "Death rates by police according to states")
+```
+ 
+
+
+ RELATING TWO VARIABLES
+ 
+ 
+ we can compare two variables using a the libary ggplot.we can use a geom_count as follows
+
+```{r}
+my_data_new%>%ggplot(aes(age, gender)) + geom_count()
+```
+
+
+
+PLOTTING A SCATTERPLOT
+
+using the plot function we create a scatterplot output as follows
+
+
+```{r}
+plot(my_data_new$age)
+```
+
+
+
+TIME SERIES 
+
+
+we create a new column that involves date that we will use to plot a time series
+
+The codes below generates the new column that we will be using to plot the time series
+
+
+```{r}
+x=my_data_new %>%  
+  mutate(age=as.numeric(age),
+         month_int=recode(my_data_new$month, 
+                          "January"=1, "February"=2, "March"=3, "April"=4, "May"=5,
+                          "June"=6, "July"=7, "August"=8, "September"=9, "October"=10,
+                          "November"=11, "December"=12),
+         date = strptime(as.factor(paste(month_int, day, year, sep= "/")),format="%m/%d/%Y"),
+         date_conv = as.Date(date, "%m/%d/%y"))
+```
+
+
+TIME SERIES PLOT
+
+using the library ggplot we create a time series output as follows
+
+```{r}
+#
+ggplot(x, aes(x=date_conv, y=age)) +
+  geom_line(color="#69b3a2") + 
+  labs(x="date",y="age", tittle="time series plot")+
+  scale_x_date(date_labels = "%b")+
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+```
+
+
+QPLOT
+
+using the library ggplot we create a qplot
+
+```{r}
+#
+qplot(x=date_conv, y=age,
+      data=x, na.rm=TRUE,
+      main="QPLOT ",
+      xlab="Date", ylab="AGE ")
+```
+
+
+
+SOME USEFULL CONCLUSIONS
+
+
+
+#to conclude that there are no outliers 
+#judging by the lack of disproportionate 
+#effect on the time series model, 
+#called special causes which are associated 
+#with abnormal events, 
+#there are no sudden shifts in the trend 
+#in the trend, the data exhibits a linear 
+#trend which is used in modeling and 
+#there data shows no clear patterns which 
+#implies a random variation.
+#The data depicts an additive seasonal change, 
+#the data values tend to increase over time,
+#but the magnitude of the seasonal change remains
+#the same.
+
+
+
